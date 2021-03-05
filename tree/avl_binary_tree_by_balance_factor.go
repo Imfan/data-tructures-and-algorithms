@@ -32,22 +32,25 @@ func (t AvlBinaryTree) GetData() interface{} {
 
 // 右旋处理
 // 对以t为根的二叉排序树做右旋处理，
-func (t *AvlBinaryTree) rRotate() {
+func rRotate(t *AvlBinaryTree) {
 	//fmt.Println("right")
 	// t 为需要右旋的的二叉树
 	tmp := t.lNode      // tmp指向左子树
 	t.lNode = tmp.rNode // 将t的左子树改为指向 左子树的右子树
-	tmp.rNode = t
+	tmp.rNode = &AvlBinaryTree{}
+	*tmp.rNode = *t
 	*t = *tmp // 将t的数据改为 右旋后的子树
 }
 
 // 左旋操作
 // 对以t为根的二叉排序树做左旋处理,与右旋处理相反
-func (t *AvlBinaryTree) lRotate() {
+func lRotate(t *AvlBinaryTree) {
 	//fmt.Println("left")
 	tmp := t.rNode
 	t.rNode = tmp.lNode
-	tmp.lNode = t
+	// 必须得初始化一个地址，不然 tmp.lNode = t; *t=*tmp 会造成指针死循环
+	tmp.lNode = &AvlBinaryTree{}
+	*tmp.lNode = *t
 	*t = *tmp
 }
 
@@ -57,7 +60,7 @@ func (t *AvlBinaryTree) leftBalance() {
 	L := t.lNode
 	switch L.bf { // 检查t的左子树的平衡因子，并做相应处理
 	case LH: // 说明 新节点插入在t的左子节点的左子树上，需要单右旋操作
-		t.rRotate()
+		rRotate(t)
 		// 旋转操作后 平衡了
 		t.bf = EH
 		L.bf = EH
@@ -77,18 +80,18 @@ func (t *AvlBinaryTree) leftBalance() {
 			L.bf = LH
 		}
 		Lr.bf = EH
-		L.lRotate() // 对左子树 左旋
-		t.rRotate() // 对t右旋
+		lRotate(L) // 对左子树 左旋
+		rRotate(t) // 对t右旋
 	}
 }
 
 // 右平衡操作
-func (t *AvlBinaryTree) rightBalance() {
+func rightBalance(t *AvlBinaryTree) {
 	//fmt.Println("rightB")
 	R := t.rNode
 	switch R.bf { //
 	case RH: //
-		t.lRotate()
+		lRotate(t) // 需要左旋转
 		// 旋转操作后 平衡了
 		t.bf = EH
 		R.bf = EH
@@ -108,14 +111,13 @@ func (t *AvlBinaryTree) rightBalance() {
 			R.bf = RH
 		}
 		Rl.bf = EH
-		R.rRotate() //
-		t.lRotate() //
+		rRotate(R) //
+		lRotate(t) //
 	}
 }
 
-func (t *AvlBinaryTree) Insert(data int) (bool, bool) {
+func Insert(data int, t *AvlBinaryTree) (ok, taller bool) {
 	//fmt.Println(data, t.data)
-	var taller, ok bool
 	if t.data == data {
 		return false, false
 	}
@@ -126,11 +128,10 @@ func (t *AvlBinaryTree) Insert(data int) (bool, bool) {
 				bf:   EH,
 			}
 			return true, true
+		} else {
+			ok, taller = Insert(data, t.lNode)
 		}
-		ok, taller = t.lNode.Insert(data)
-		if !ok {
-			return false, taller
-		}
+
 		//fmt.Println(taller)
 
 		if taller {
@@ -153,12 +154,11 @@ func (t *AvlBinaryTree) Insert(data int) (bool, bool) {
 				data: data,
 				bf:   EH,
 			}
-			return true, true
+			taller = true
+		} else {
+			ok, taller = Insert(data, t.rNode)
 		}
-		ok, taller = t.rNode.Insert(data)
-		if !ok {
-			return false, taller
-		}
+
 		//fmt.Println(taller)
 
 		if taller {
@@ -170,7 +170,7 @@ func (t *AvlBinaryTree) Insert(data int) (bool, bool) {
 				t.bf = RH
 				taller = true
 			case RH:
-				t.rightBalance()
+				rightBalance(t)
 				taller = false
 			}
 		}

@@ -3,7 +3,6 @@ package tree
 import (
 	"fmt"
 	"reflect"
-	"strconv"
 )
 
 type Tree interface {
@@ -67,7 +66,7 @@ func LevelTraversalByBFS(t Tree) {
 		// 循环完上次 添加的所有节点，并 添加下层所有的节点到 队列中
 		for j := 0; j < len(q); j++ {
 			tmp = q[j]
-			d, _ := strconv.Atoi(tmp.GetData().(string))
+			d, _ := tmp.GetData().(int)
 			//fmt.Println(d)
 			result[i] = append(result[i], d)
 			if !reflect.ValueOf(tmp.GetLNode()).IsNil() {
