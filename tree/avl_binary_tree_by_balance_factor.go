@@ -33,10 +33,10 @@ func (t AvlBinaryTree) GetData() interface{} {
 // 右旋处理
 // 对以t为根的二叉排序树做右旋处理，
 func rRotate(t *AvlBinaryTree) {
-	//fmt.Println("right")
 	// t 为需要右旋的的二叉树
 	tmp := t.lNode      // tmp指向左子树
 	t.lNode = tmp.rNode // 将t的左子树改为指向 左子树的右子树
+	// 必须得初始化一个地址，不然 tmp.lNode = t; *t=*tmp 会造成指针死循环
 	tmp.rNode = &AvlBinaryTree{}
 	*tmp.rNode = *t
 	*t = *tmp // 将t的数据改为 右旋后的子树
@@ -45,7 +45,6 @@ func rRotate(t *AvlBinaryTree) {
 // 左旋操作
 // 对以t为根的二叉排序树做左旋处理,与右旋处理相反
 func lRotate(t *AvlBinaryTree) {
-	//fmt.Println("left")
 	tmp := t.rNode
 	t.rNode = tmp.lNode
 	// 必须得初始化一个地址，不然 tmp.lNode = t; *t=*tmp 会造成指针死循环
@@ -55,8 +54,7 @@ func lRotate(t *AvlBinaryTree) {
 }
 
 // 对以t为根的二叉树做左平衡旋转操作
-func (t *AvlBinaryTree) leftBalance() {
-	//fmt.Println("leftB")
+func leftBalance(t *AvlBinaryTree) {
 	L := t.lNode
 	switch L.bf { // 检查t的左子树的平衡因子，并做相应处理
 	case LH: // 说明 新节点插入在t的左子节点的左子树上，需要单右旋操作
@@ -70,7 +68,7 @@ func (t *AvlBinaryTree) leftBalance() {
 		// 修改t及其左子节点的平衡因子
 		switch Lr.bf {
 		case LH:
-			t.bf = RH //
+			t.bf = RH
 			L.bf = EH
 		case EH:
 			t.bf = EH
@@ -87,21 +85,18 @@ func (t *AvlBinaryTree) leftBalance() {
 
 // 右平衡操作
 func rightBalance(t *AvlBinaryTree) {
-	//fmt.Println("rightB")
 	R := t.rNode
-	switch R.bf { //
-	case RH: //
+	switch R.bf {
+	case RH:
 		lRotate(t) // 需要左旋转
 		// 旋转操作后 平衡了
 		t.bf = EH
 		R.bf = EH
 	case LH: //
-		Rl := R.lNode //
-		//fmt.Println(Rl)
-		//
+		Rl := R.lNode
 		switch Rl.bf {
 		case RH:
-			t.bf = LH //
+			t.bf = LH
 			R.bf = EH
 		case EH:
 			t.bf = EH
@@ -111,13 +106,16 @@ func rightBalance(t *AvlBinaryTree) {
 			R.bf = RH
 		}
 		Rl.bf = EH
-		rRotate(R) //
-		lRotate(t) //
+		rRotate(R)
+		lRotate(t)
 	}
 }
 
+/**
+ok: 插入是否成功
+taller: 树是否变高
+*/
 func Insert(data int, t *AvlBinaryTree) (ok, taller bool) {
-	//fmt.Println(data, t.data)
 	if t.data == data {
 		return false, false
 	}
@@ -131,13 +129,10 @@ func Insert(data int, t *AvlBinaryTree) (ok, taller bool) {
 		} else {
 			ok, taller = Insert(data, t.lNode)
 		}
-
-		//fmt.Println(taller)
-
 		if taller {
 			switch t.bf {
 			case LH: // 原本左子树比右子树高，需要左平衡处理
-				t.leftBalance()
+				leftBalance(t)
 				taller = false
 			case EH: // 原本左右子树等高， 现在因为左子树增高而树增高
 				t.bf = LH
@@ -158,18 +153,17 @@ func Insert(data int, t *AvlBinaryTree) (ok, taller bool) {
 		} else {
 			ok, taller = Insert(data, t.rNode)
 		}
-
-		//fmt.Println(taller)
-
 		if taller {
 			switch t.bf {
 			case LH:
+				// 平衡了 taller要设为false
 				t.bf = EH
 				taller = false
 			case EH:
 				t.bf = RH
 				taller = true
 			case RH:
+				// 右平衡操作后，t的子树可能不平衡，但t肯定会平衡，所以taller设为false
 				rightBalance(t)
 				taller = false
 			}
