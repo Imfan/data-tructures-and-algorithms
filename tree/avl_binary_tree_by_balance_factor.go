@@ -9,25 +9,35 @@ const (
 type AvlBinaryTree struct {
 	bf    int8 // 节点的平衡因子
 	index int  // 整型数据
-	data  int
+	data  interface{}
 	lNode *AvlBinaryTree
 	rNode *AvlBinaryTree
 }
 
-func NewAvlTree() *AvlBinaryTree {
-	return &AvlBinaryTree{}
+func InitAvlTree(index int, data ...interface{}) *AvlBinaryTree {
+	return &AvlBinaryTree{
+		bf:    0,
+		index: index,
+		data:  data,
+		lNode: nil,
+		rNode: nil,
+	}
 }
 
-func (t AvlBinaryTree) GetLNode() Tree {
+func (t *AvlBinaryTree) GetLNode() Tree {
 	return Tree(t.lNode)
 }
 
-func (t AvlBinaryTree) GetRNode() Tree {
+func (t *AvlBinaryTree) GetRNode() Tree {
 	return Tree(t.rNode)
 }
 
-func (t AvlBinaryTree) GetData() interface{} {
-	return t.data
+func (t *AvlBinaryTree) GetData() interface{} {
+	return t.index
+}
+
+func (t *AvlBinaryTree) GetIndex() int {
+	return t.index
 }
 
 // 右旋处理
@@ -57,16 +67,16 @@ func lRotate(t *AvlBinaryTree) {
 func leftBalance(t *AvlBinaryTree) {
 	L := t.lNode
 	switch L.bf { // 检查t的左子树的平衡因子，并做相应处理
-	case LH: // 说明 新节点插入在t的左子节点的左子树上，需要单右旋操作
+	case LH: // L左树高了，需要单右旋操作
 		rRotate(t)
 		// 旋转操作后 平衡了
 		t.bf = EH
 		L.bf = EH
 		break
-	case RH: // 新加入的节点插入到了 t的左节点的右子树上，要先对其左子树左旋再t右旋
+	case RH: // L右树高了，要先对其左子树左旋再t右旋
 		Lr := L.rNode // t的左节点的右子树节点
 		// 修改t及其左子节点的平衡因子
-		switch Lr.bf {
+		switch Lr.bf { // 这些状态值，在做完相应旋转操作后，都是固定的，可以画图试试
 		case LH:
 			t.bf = RH
 			L.bf = EH
@@ -115,19 +125,16 @@ func rightBalance(t *AvlBinaryTree) {
 ok: 插入是否成功
 taller: 树是否变高
 */
-func Insert(data int, t *AvlBinaryTree) (ok, taller bool) {
-	if t.data == data {
+func Insert(InsertNode *AvlBinaryTree, t *AvlBinaryTree) (ok, taller bool) {
+	if t.GetIndex() == InsertNode.GetIndex() {
 		return false, false
 	}
-	if data < t.data {
+	if InsertNode.GetIndex() < t.GetIndex() {
 		if t.lNode == nil {
-			t.lNode = &AvlBinaryTree{
-				data: data,
-				bf:   EH,
-			}
+			t.lNode = InsertNode
 			return true, true
 		} else {
-			ok, taller = Insert(data, t.lNode)
+			ok, taller = Insert(InsertNode, t.lNode)
 		}
 		if taller {
 			switch t.bf {
@@ -145,13 +152,10 @@ func Insert(data int, t *AvlBinaryTree) (ok, taller bool) {
 	} else {
 
 		if t.rNode == nil {
-			t.rNode = &AvlBinaryTree{
-				data: data,
-				bf:   EH,
-			}
+			t.rNode = InsertNode
 			taller = true
 		} else {
-			ok, taller = Insert(data, t.rNode)
+			ok, taller = Insert(InsertNode, t.rNode)
 		}
 		if taller {
 			switch t.bf {

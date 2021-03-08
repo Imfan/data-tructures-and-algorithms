@@ -11,6 +11,15 @@ type Tree interface {
 	GetData() interface{}
 }
 
+type AVLInsert interface {
+	GetIndex() int
+	rRotate()
+	lRotate()
+	leftBalance()
+	rightBalance()
+	Tree
+}
+
 //二叉树前序遍历递归方式
 func PreOrderTraverse(t Tree) {
 	if reflect.ValueOf(t).IsNil() {

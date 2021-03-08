@@ -15,13 +15,15 @@ func TestMoveSameNumInArray(t *testing.T) {
 		{[]int{2, 2, 4, 5}, 2, 2},
 		{[]int{2, 3, 3, 5}, 3, 2},
 		{[]int{2, 3, 3, 5}, 5, 3},
+		{[]int{10, 7, 5, 12, 30, 3, 5}, 5, 5},
 		{[]int{2, 2, 5}, 2, 1},
 	}
 
 	Convey("测试moveSameNumInArray", t, func() {
 		for _, v := range cases {
-			So(moveSameNumInArray(v.arr, v.input), ShouldEqual, v.want)
-			fmt.Println(v.arr[:v.want])
+			t, w := moveSameNumInArray(v.arr, v.input)
+			So(t, ShouldEqual, v.want)
+			fmt.Println(w)
 		}
 	})
 }

@@ -5,9 +5,12 @@ import (
 )
 
 func TestAvlBinaryTree_Insert(t *testing.T) {
-	avl := NewAvlTree()
-	for i := 8; i > 1; i-- {
-		avl.Insert(i)
+	avl := InitAvlTree(1)
+	for i := 8; i >= 1; i-- {
+		Insert(InitAvlTree(i, []int{i}), avl)
 	}
+	//Insert(1, avl)
+	//Insert(2, avl)
+	//Insert(3, avl)
 	LevelTraversalByBFS(avl)
 }

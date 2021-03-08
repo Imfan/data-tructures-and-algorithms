@@ -44,7 +44,7 @@ func NewHuffmanTree(src map[interface{}]uint) *HuffmanTree {
 	return tree
 }
 
-//根据数据进行赫夫曼编码
+//将数据进行赫夫曼编码
 func (h *HuffmanTree) Coding(target interface{}) (result string) {
 	if target == nil {
 		return
@@ -164,16 +164,21 @@ func regroup(src HuffmanNodeList, temp *HuffmanNode) HuffmanNodeList {
 		result[0] = temp
 		return result
 	}
+	// 如果新添加的 权重大于最大的，则直接放到最后
 	if src[length-1].Weight <= temp.Weight {
 		copy(result, src)
 		result[length] = temp
 		return result
 	}
+
 	for i := range src {
+		// 如果 原有的小于 新添加的则，放到result的前面
 		if src[i].Weight <= temp.Weight {
 			result[i] = src[i]
 		} else {
+			// temp该放的位置
 			result[i] = temp
+			// 直接复制后面的，因为是排好序的
 			copy(result[i+1:], src[i:])
 			break
 		}

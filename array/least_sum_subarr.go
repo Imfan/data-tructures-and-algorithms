@@ -18,16 +18,15 @@ func SubArrLenLeast(arr []int, target int) int {
 	var all []allCase
 	LeastLen := MaxInt
 	slowPointer := 0
-	fastPointer := 1
 	length := len(arr) - 1
-	for fastPointer = 0; fastPointer <= length; fastPointer ++ {
-		sum +=  arr[fastPointer]
+	for fastPointer := 0; fastPointer <= length; fastPointer++ {
+		sum += arr[fastPointer]
 		for sum >= target {
 			tmpLen := fastPointer - slowPointer + 1
-			if LeastLen > tmpLen && tmpLen !=0 {
+			if LeastLen > tmpLen && tmpLen != 0 {
 				LeastLen = tmpLen
 			}
-			all = append(all, allCase{slowPointer, fastPointer})
+			all = append(all, allCase{slowPointer, fastPointer + 1})
 			sum -= arr[slowPointer]
 			slowPointer++
 		}

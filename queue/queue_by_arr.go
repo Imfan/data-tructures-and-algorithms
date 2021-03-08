@@ -1,5 +1,7 @@
 package queue
 
+import "fmt"
+
 type QueueByArr struct {
 	queue           []interface{}
 	head, tail, cap int
@@ -13,10 +15,11 @@ func Init(num int) *QueueByArr {
 	}
 }
 func (q *QueueByArr) Push(i interface{}) bool {
-	if len(q.queue) >= q.cap {
+	if (q.tail+1)%q.cap == q.head {
 		return false
 	}
 	q.queue[q.tail] = i
+	fmt.Println(q.queue)
 	q.tail++
 	if q.tail >= q.cap {
 		q.tail = 0
@@ -25,11 +28,15 @@ func (q *QueueByArr) Push(i interface{}) bool {
 }
 
 func (q *QueueByArr) Pop() (interface{}, bool) {
-	if len(q.queue) <= 0 {
+	if q.head == q.tail {
 		return 0, false
 	}
 	ret := q.queue[q.head]
+	q.queue[q.head] = nil
 	q.head++
+	if q.head >= q.cap {
+		q.head = 0
+	}
 	return ret, true
 }
 

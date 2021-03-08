@@ -1,10 +1,11 @@
 package queue
 
 import (
-	"daily_test/algorithm/stack"
+	"daily_test/data-tructures-and-algorithms/stack"
 	"strconv"
 )
 
+// 逆波兰表达式
 func evalPRN(arr []string) int {
 	symbol := map[string]string{
 		"+": "+",
