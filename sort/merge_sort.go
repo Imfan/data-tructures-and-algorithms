@@ -37,7 +37,7 @@ func merge(arr, ret []int, l, c, r int) {
 			break
 		}
 		// 依次比较。如果 左区间最小值 小于 右区间最小值，则 放到临时数组，最终是 从大到小顺序
-		if arr[leftLeft] < arr[rightLeft] {
+		if smallToLargeOrder(arr[leftLeft], arr[rightLeft]) {
 			ret[tempPointer] = arr[leftLeft]
 			leftLeft++
 		} else {
@@ -64,4 +64,12 @@ func merge(arr, ret []int, l, c, r int) {
 	}
 	//fmt.Println(arr)
 
+}
+
+func smallToLargeOrder(left, right int) bool {
+	return left < right && smallToLarge
+}
+
+func largeToSmallOrder(left, right int) bool {
+	return left > right
 }

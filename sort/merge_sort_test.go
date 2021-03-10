@@ -23,6 +23,17 @@ func TestMergeSort(t *testing.T) {
 	}
 }
 
-func ()  {
-	
+func BenchmarkMergeSort(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		tCase := make([]int, end)
+		for i := 0; i < end; i++ {
+			tCase[i] = rand.Intn(randRange)
+		}
+		MergeSort(tCase)
+		//for k := range tCase {
+		//	if k+1 < end && tCase[k] > tCase[k+1] {
+		//		panic("排序失败")
+		//	}
+		//}
+	}
 }
