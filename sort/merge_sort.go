@@ -6,6 +6,7 @@ func MergeSort(arr []int) {
 	subMergeSort(arr, ret, 0, len(arr)-1)
 }
 
+// 递归 归并排序
 func subMergeSort(arr []int, ret []int, l, r int) {
 	if l >= r {
 		return
@@ -16,6 +17,39 @@ func subMergeSort(arr []int, ret []int, l, r int) {
 	// 如果不加1会导致，死循环 左闭右闭
 	subMergeSort(arr, ret, c+1, r)
 	merge(arr, ret, l, c, r)
+}
+
+func IterativeMergeSort(arr []int) {
+	k := 1
+	length := len(arr)
+	ret := make([]int, length)
+
+	for k < length {
+		subIterativeMerge(arr, ret, k, length-1)
+		k = k * 2
+		subIterativeMerge(arr, ret, k, length-1)
+		k = k * 2
+	}
+}
+
+// 各个子数组排序
+func subIterativeMerge(arr, tmp []int, subLength, right int) {
+	i := 1
+	//for i <= right-2*subLength+1 {
+	// 保证至少有两组
+	for i <= right-2*subLength {
+		merge(arr, tmp, i, i+subLength-1, i+2*subLength-1)
+		i = i + 2*subLength
+	}
+	// 如果剩下两组，其中有一组是单数的
+	if i < right-subLength+1 {
+		// 合并剩余的两组
+		merge(arr, tmp, i, i+subLength-1, right)
+	} else { //只剩下一组或者一个，一定 有序的
+		for j := 0; j <= right; j++ {
+			arr[j] = tmp[j]
+		}
+	}
 }
 
 func merge(arr, ret []int, l, c, r int) {

@@ -6,14 +6,14 @@ import (
 	"testing"
 )
 
-func TestMergeSort(t *testing.T) {
+func TestCountingSort(t *testing.T) {
 	for j := 0; j < 10; j++ {
 		tCase := make([]int, end)
 		for i := 0; i < end; i++ {
 			tCase[i] = rand.Intn(randRange)
 		}
-		convey.Convey("测试插入排序", t, func() {
-			MergeSort(tCase)
+		convey.Convey("测试计数排序", t, func() {
+			CountingSort(tCase)
 			for k := range tCase {
 				if k+1 < end && tCase[k] > tCase[k+1] {
 					t.Fatalf("排序失败")
@@ -23,30 +23,30 @@ func TestMergeSort(t *testing.T) {
 	}
 }
 
-func TestIterativeMergeSort(t *testing.T) {
-	for j := 0; j < 10; j++ {
-		tCase := make([]int, end)
-		for i := 0; i < end; i++ {
-			tCase[i] = rand.Intn(randRange)
-		}
-		convey.Convey("测试插入排序", t, func() {
-			IterativeMergeSort(tCase)
-			for k := range tCase {
-				if k+1 < end && tCase[k] > tCase[k+1] {
-					t.Fatalf("排序失败")
-				}
-			}
-		})
-	}
-}
+//func TestCountingSort2(t *testing.T) {
+//	for j := 0; j < 10; j++ {
+//		tCase := make([]int, end)
+//		for i := 0; i < end; i++ {
+//			tCase[i] = rand.Intn(randRange)
+//		}
+//		convey.Convey("测试计数排序", t, func() {
+//			tCase = CountingSort2(tCase)
+//			for k := range tCase {
+//				if k+1 < end && tCase[k] > tCase[k+1] {
+//					t.Fatalf("排序失败")
+//				}
+//			}
+//		})
+//	}
+//}
 
-func BenchmarkMergeSort(b *testing.B) {
-	for i := 0; i < b.N; i++ {
+func BenchmarkFsCountingSort(b *testing.B) {
+	for j := 0; j < b.N; j++ {
 		tCase := make([]int, end)
 		for i := 0; i < end; i++ {
 			tCase[i] = rand.Intn(randRange)
 		}
-		MergeSort(tCase)
+		CountingSort(tCase)
 		//for k := range tCase {
 		//	if k+1 < end && tCase[k] > tCase[k+1] {
 		//		panic("排序失败")
@@ -55,13 +55,13 @@ func BenchmarkMergeSort(b *testing.B) {
 	}
 }
 
-//func BenchmarkIterativeMergeSort(b *testing.B) {
-//	for i := 0; i < b.N; i++ {
+//func BenchmarkFsCountingSort2(b *testing.B) {
+//	for j := 0; j < b.N; j++ {
 //		tCase := make([]int, end)
 //		for i := 0; i < end; i++ {
 //			tCase[i] = rand.Intn(randRange)
 //		}
-//		IterativeMergeSort(tCase)
+//		tCase = CountingSort2(tCase)
 //		//for k := range tCase {
 //		//	if k+1 < end && tCase[k] > tCase[k+1] {
 //		//		panic("排序失败")
