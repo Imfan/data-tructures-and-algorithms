@@ -1,6 +1,8 @@
 package str
 
-import "strings"
+import (
+	"strings"
+)
 
 type stringFinder struct {
 	pattern        string
@@ -8,7 +10,7 @@ type stringFinder struct {
 	goodSuffixSkip []int
 }
 
-func StringFind(pattern, text string) int {
+func BM(pattern, text string) int {
 	return makeStringFinder(pattern).next(text)
 }
 
@@ -52,16 +54,14 @@ func makeStringFinder(pattern string) *stringFinder {
 		// 然后移动 lastPrefix次， 就将相同的字符对齐了。相同后缀的起点到子串的头部的距离 跟  相同前缀的终点到子串的尾部距离 是一样的
 		f.goodSuffixSkip[i] = lastPrefix + tm
 	}
-	// 第二阶段: 好后缀在pattern前面部分还出现过, 如下计算相应的移动步数
-	// 会覆盖之前第一阶段的部分值。但 好后缀 出现过移动步数比没出现的小。所以最终值是正确的
-	// 举例： "mississi" 中好后缀是issi, 在pattern[1]处出现过，所以移动步数为 last-i  +  lenSuffix
+	// 第二阶段: 除去前缀，好后缀 在pattern前面还出现过, 如下计算相应的移动步数
+	// 举例： "mississi" 中好后缀是issi, 在pattern[1]处出现过，移动步数为 last-i  +  lenSuffix
 	for i := 0; i < last; i++ {
-		// 抛去第一个字符，部分子串与后缀相同的长度
+		// 前缀已经算过了，这里计算抛去第一个字符，部分子串与后缀相同的长度
 		lenSuffix := longestCommonSuffix(pattern, pattern[1:i+1])
-		// 非前缀与后缀相等，而是 pattern中抛去抛去第一个字符 部分子串 与 后缀 相同的情况
+		// 略过 某个字符一直重复的  子串,还有尾部跟头部相同时，略过
 		if pattern[i-lenSuffix] != pattern[last-lenSuffix] {
-			// (last-i) is the shift, and lenSuffix is len(suffix).
-			// 应该记到 last-lenSuffix。 就是 在比较时 不相等的位置。 lenSuffix + last - i 跟上面类似
+			// 这里的是从前往后数的，所以 这里的 lenSuffix是对齐 主串和pattern子串 尾部， last-i 是重复子串尾部到 pattern子串的尾部的距离
 			f.goodSuffixSkip[last-lenSuffix] = lenSuffix + last - i
 		}
 	}
@@ -87,7 +87,7 @@ func (f *stringFinder) next(text string) int {
 	for i < len(text) {
 		// 每次比较时都从p的最后一位开始比较
 		j := len(f.pattern) - 1
-		for j >= 0 && text[i] == f.pattern[j] {
+		for j >= 0 && i >= 0 && text[i] == f.pattern[j] {
 			i--
 			j--
 		}

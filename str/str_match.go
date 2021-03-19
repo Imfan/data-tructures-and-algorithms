@@ -2,7 +2,7 @@ package str
 
 // 朴素算法
 // 返回第一个匹配的字符串 起始位置，左闭右开
-func BF(str, matchStr string) (int, int) {
+func BF(matchStr, str string) int {
 	for i := 0; i+len(matchStr) <= len(str); i++ {
 		tmpS := str[i:]
 		j := 0
@@ -16,14 +16,20 @@ func BF(str, matchStr string) (int, int) {
 		//fmt.Println(jj)
 		// 如果全匹配 直接返回
 		if jj == len(matchStr) {
-			return i, jj + i
+			return i
 		}
 	}
-	return 0, 0
+	return -1
 }
 
 //KMP算法
-func KMP(str, matchStr string) (int, int) {
+func KMP(matchStr, str string) int {
+	if len(matchStr) == 0 {
+		return 0
+	}
+	if len(str) == 0 {
+		return -1
+	}
 	// 匹配表
 	next := getNext(matchStr)
 	j := 0
@@ -43,16 +49,20 @@ func KMP(str, matchStr string) (int, int) {
 
 		if j == len(matchStr) {
 			// 返回起始位置，左闭右开
-			return i - j, i
+			return i - j
 		}
 	}
-	return 0, 0
+	return -1
 }
 
 // 求next数组的过程完全可以看成字符串匹配的过程，即以模式字符串为主字符串，以模式字符串的前缀为目标字符串，一旦字符串匹配成功，那么当前的next值就是匹配成功的字符串的长度。
 // 获取字符串匹配表
 func getNext(strM string) []int {
-	match := make([]int, len(strM))
+	length := len(strM)
+	if length == 0 {
+		length = 1
+	}
+	match := make([]int, length)
 	// 是为了判断 j又回到起点了
 	match[0] = -1
 	// 被匹配的字符串的 指针
@@ -76,9 +86,4 @@ func getNext(strM string) []int {
 	}
 	//fmt.Println(match)
 	return match
-}
-
-func BM(strM string) (int, int) {
-
-	return 0, 0
 }
