@@ -1,6 +1,8 @@
 package tree
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type BinaryTree struct {
 	data  string
@@ -8,15 +10,19 @@ type BinaryTree struct {
 	RNode *BinaryTree
 }
 
-func (t BinaryTree) GetLNode() Tree {
-	return Tree(t.LNode)
+func (t *BinaryTree) GetLNode() interface{} {
+	return t.LNode
 }
 
-func (t BinaryTree) GetRNode() Tree {
-	return Tree(t.RNode)
+func (t *BinaryTree) GetRNode() interface{} {
+	return t.RNode
 }
 
-func (t BinaryTree) GetData() interface{} {
+func (t *BinaryTree) GetData() interface{} {
+	return t.data
+}
+
+func (t *BinaryTree) String() string {
 	return t.data
 }
 
@@ -47,7 +53,6 @@ func (t *BinaryTree) Insert(data string) {
 }
 
 func (t *BinaryTree) Delete(data string) bool {
-
 	needDel := t.Find(data)
 	fmt.Println(needDel)
 	if needDel != nil {
@@ -67,7 +72,6 @@ func (t *BinaryTree) Delete(data string) bool {
 			}
 			// 先赋值
 			needDel.data = r.data
-
 			// 如果 要删除的节点的左子树的右子树为空，则会相等
 			if l == needDel {
 				// 直接把要删除的节点的左指针指向 左指针的左指针 r == needdel.LNode
@@ -77,11 +81,8 @@ func (t *BinaryTree) Delete(data string) bool {
 				//最大那个值的节点删了，让他的父节点指向他的左节点 l 为他的父节点
 				l.RNode = r.LNode
 			}
-
 		}
-
 	}
-
 	return true
 }
 

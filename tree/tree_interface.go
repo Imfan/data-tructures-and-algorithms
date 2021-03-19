@@ -3,12 +3,14 @@ package tree
 import (
 	"fmt"
 	"reflect"
+	"strconv"
 )
 
 type Tree interface {
-	GetLNode() Tree
-	GetRNode() Tree
+	GetLNode() interface{}
+	GetRNode() interface{}
 	GetData() interface{}
+	fmt.Stringer
 }
 
 type AVLInsert interface {
@@ -27,8 +29,8 @@ func PreOrderTraverse(t Tree) {
 		return
 	}
 	fmt.Println(t.GetData())
-	PreOrderTraverse(t.GetLNode()) // 先遍历左子树
-	PreOrderTraverse(t.GetRNode()) // 遍历右子树
+	PreOrderTraverse(t.GetLNode().(Tree)) // 先遍历左子树
+	PreOrderTraverse(t.GetRNode().(Tree)) // 遍历右子树
 }
 
 // 中序遍历
@@ -37,9 +39,9 @@ func InOrderTraverse(t Tree) {
 		//fmt.Println("中序遍历")
 		return
 	}
-	InOrderTraverse(t.GetLNode())
+	InOrderTraverse(t.GetLNode().(Tree))
 	fmt.Println(t.GetData())
-	InOrderTraverse(t.GetRNode())
+	InOrderTraverse(t.GetRNode().(Tree))
 }
 
 // 后序遍历
@@ -48,8 +50,8 @@ func PostOrderTraverse(t Tree) {
 		//fmt.Println("后序遍历")
 		return
 	}
-	PostOrderTraverse(t.GetLNode())
-	PostOrderTraverse(t.GetRNode())
+	PostOrderTraverse(t.GetLNode().(Tree))
+	PostOrderTraverse(t.GetRNode().(Tree))
 	fmt.Println(t.GetData())
 }
 
@@ -75,14 +77,14 @@ func LevelTraversalByBFS(t Tree) {
 		// 循环完上次 添加的所有节点，并 添加下层所有的节点到 队列中
 		for j := 0; j < len(q); j++ {
 			tmp = q[j]
-			d, _ := tmp.GetData().(int)
-			//fmt.Println(d)
+			d, _ := strconv.Atoi(tmp.String())
+			//fmt.Println(reflect.TypeOf(tmp.GetData()))
 			result[i] = append(result[i], d)
 			if !reflect.ValueOf(tmp.GetLNode()).IsNil() {
-				qBak = append(qBak, tmp.GetLNode())
+				qBak = append(qBak, tmp.GetLNode().(Tree))
 			}
 			if !reflect.ValueOf(tmp.GetRNode()).IsNil() {
-				qBak = append(qBak, tmp.GetRNode())
+				qBak = append(qBak, tmp.GetRNode().(Tree))
 			}
 		}
 		q = qBak
@@ -101,6 +103,15 @@ func LevelTraversalByRecursion(t Tree) [][]int {
 	return [][]int{}
 }
 
+func dfsPrint(node Tree) {
+	if reflect.ValueOf(node).IsNil() {
+		return
+	}
+	fmt.Println(node.GetData())
+	dfsPrint(node.GetLNode().(Tree))
+	dfsPrint(node.GetRNode().(Tree))
+}
+
 func dfsHelper(node Tree, level int) {
 	if reflect.ValueOf(node).IsNil() {
 		return
@@ -110,6 +121,35 @@ func dfsHelper(node Tree, level int) {
 	}
 	data, _ := node.GetData().(int)
 	result[level] = append(result[level], data)
-	dfsHelper(node.GetLNode(), level+1)
-	dfsHelper(node.GetRNode(), level+1)
+	dfsHelper(node.GetLNode().(Tree), level+1)
+	dfsHelper(node.GetRNode().(Tree), level+1)
+}
+
+// 可视化 输出树结构
+func Output(node Tree, prefix string, isTail bool, str *string) {
+	if !reflect.ValueOf(node.GetRNode()).IsNil() {
+		newPrefix := prefix
+		if isTail {
+			newPrefix += "│   "
+		} else {
+			newPrefix += "    "
+		}
+		Output(node.GetRNode().(Tree), newPrefix, false, str)
+	}
+	*str += prefix
+	if isTail {
+		*str += "└── "
+	} else {
+		*str += "┌── "
+	}
+	*str += node.String() + "\n"
+	if !reflect.ValueOf(node.GetLNode()).IsNil() {
+		newPrefix := prefix
+		if isTail {
+			newPrefix += "    "
+		} else {
+			newPrefix += "│   "
+		}
+		Output(node.GetLNode().(Tree), newPrefix, true, str)
+	}
 }

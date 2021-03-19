@@ -1,6 +1,7 @@
 package tree
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -12,5 +13,13 @@ func TestAvlBinaryTree_Insert(t *testing.T) {
 	//Insert(1, avl)
 	//Insert(2, avl)
 	//Insert(3, avl)
-	LevelTraversalByBFS(avl)
+	//LevelTraversalByBFS(avl)
+	str := ""
+	Output(avl, "", true, &str)
+	fmt.Println(str)
+
+	//PreOrderTraverse(avl)
+	//InOrderTraverse(avl)
+	PostOrderTraverse(avl)
+
 }

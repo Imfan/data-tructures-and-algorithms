@@ -1,5 +1,7 @@
 package tree
 
+import "strconv"
+
 const (
 	LH = 1  // 左子树高
 	EH = 0  // 左右子树等高
@@ -24,16 +26,20 @@ func InitAvlTree(index int, data ...interface{}) *AvlBinaryTree {
 	}
 }
 
-func (t *AvlBinaryTree) GetLNode() Tree {
-	return Tree(t.lNode)
+func (t *AvlBinaryTree) GetLNode() interface{} {
+	return t.lNode
 }
 
-func (t *AvlBinaryTree) GetRNode() Tree {
-	return Tree(t.rNode)
+func (t *AvlBinaryTree) GetRNode() interface{} {
+	return t.rNode
 }
 
 func (t *AvlBinaryTree) GetData() interface{} {
 	return t.index
+}
+
+func (t *AvlBinaryTree) String() string {
+	return strconv.Itoa(t.index)
 }
 
 func (t *AvlBinaryTree) GetIndex() int {
@@ -175,3 +181,9 @@ func Insert(InsertNode *AvlBinaryTree, t *AvlBinaryTree) (ok, taller bool) {
 	}
 	return true, taller
 }
+
+// 删除
+
+// 修改某个节点
+
+// 查找

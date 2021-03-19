@@ -42,28 +42,15 @@ func TestBubbleSort(t *testing.T) {
 
 }
 
-//func BenchmarkBubbleSort(b *testing.B) {
-//	tmp := []int{}
-//	for i := 0; i < end; i++ {
-//		tmp = append(tmp, rand.Intn(randRange))
-//	}
-//	b.ResetTimer()
-//	for i := 0; i < b.N; i++ {
-//		b.StopTimer()
-//		input = make([]int, end)
-//		copy(input, tmp)
-//		b.StartTimer()
-//		BubbleSort(input)
-//		//b.StopTimer()
-//		//// 验证排序是否成功
-//		//for k, v := range input {
-//		//	if k+1 < end && input[k+1] < v {
-//		//		panic("排序失败")
-//		//	}
-//		//}
-//		//b.StartTimer()
-//	}
-//}
+func BenchmarkSLBubbleSort(b *testing.B) {
+	for j := 0; j < b.N; j++ {
+		tCase := make([]int, end)
+		for i := 0; i < end; i++ {
+			tCase[i] = rand.Intn(randRange)
+		}
+		BubbleSort(tCase)
+	}
+}
 
 //func BenchmarkNoSkipBubbleSort(b *testing.B) {
 //	tmp := []int{}

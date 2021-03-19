@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	end       = 1 + randInt()
+	end       = 1000 + randInt()
 	randRange = end * 10
 	input     = []int{}
 	// 从小到大顺序排序

@@ -15,8 +15,23 @@ func qSort(arr []int, low, high int) {
 	}
 }
 
+func swap(arr []int, low, high int) {
+	arr[low], arr[high] = arr[high], arr[low]
+}
+
 // 整理数据并返回 分割点、枢轴
 func partition(arr []int, low, high int) int {
+	// 三数取其中
+	mid := low + (high-low)/2
+	if arr[low] > arr[high] {
+		swap(arr, low, high)
+	}
+	if arr[mid] > arr[high] {
+		swap(arr, mid, high) // 到这里 low>mid>high
+	}
+	if arr[mid] > arr[low] {
+		swap(arr, mid, low) // 到这里 mid 为三数的中间值
+	}
 	// 选取第一个元素为 分割点
 	pivotKey := arr[low]
 	// low大于等于high，否则会陷入死循环

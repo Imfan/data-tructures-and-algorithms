@@ -25,12 +25,12 @@ func TestInsertSort(t *testing.T) {
 	}
 }
 
-//func BenchmarkInsertSort(b *testing.B) {
-//	for j := 0; j < b.N; j++ {
-//		tCase := make([]int, end)
-//		for i := 0; i < end; i++ {
-//			tCase[i] = rand.Intn(randRange)
-//		}
-//		InsertSort(tCase)
-//	}
-//}
+func BenchmarkSLInsertSort(b *testing.B) {
+	for j := 0; j < b.N; j++ {
+		tCase := make([]int, end)
+		for i := 0; i < end; i++ {
+			tCase[i] = rand.Intn(randRange)
+		}
+		InsertSort(tCase)
+	}
+}
