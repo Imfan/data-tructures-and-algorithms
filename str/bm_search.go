@@ -1,6 +1,7 @@
 package str
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -12,6 +13,58 @@ type stringFinder struct {
 
 func BM(pattern, text string) int {
 	return makeStringFinder(pattern).next(text)
+}
+
+func BM2(pattern, text string) int {
+	return makeStringFinder2(pattern).next(text)
+}
+
+// 创建 好字符 规则和 坏字符 规则,比较时是 从后向前 比较
+func makeStringFinder2(pattern string) *stringFinder {
+	f := &stringFinder{
+		pattern:        pattern,
+		goodSuffixSkip: make([]int, len(pattern)),
+	}
+	// last 是pattern最后一个字符的索引
+	last := len(pattern) - 1
+
+	// 创建坏字符表，记录不匹配时T的i指针移动步数
+	// 第一阶段，初始化256个字符全部移动 len(pattern) 步。以ASCII码作为键，比较时直接传主串不相等的字符ASCII码即可
+	for i := range f.badCharSkip {
+		f.badCharSkip[i] = len(pattern)
+	}
+
+	// 第二阶段：从左到右遍历pattern，更新其索引与P末尾的距离，结果就是该字符到末尾的最小距离
+	// 没有计算last byte的距离, 因为移动至少要一步。 没有0步。
+	for i := 0; i < last; i++ {
+		// 后面相同的ASCII码会覆盖前面的，以防止 移动距离过大，错过
+		f.badCharSkip[pattern[i]] = last - i
+	}
+
+	// 创建 好后缀表
+	for i := 0; i < last; i++ {
+
+		// 如果有相同的前后缀
+		if strings.HasPrefix(pattern, pattern[last-i:]) {
+			f.goodSuffixSkip[last-i-1] = last + 1
+		} else { // 没有相同的前后缀
+			f.goodSuffixSkip[last-i-1] = last + 1 + i
+		}
+		// 前缀已经算过了，这里计算抛去第一个字符，部分子串与后缀相同的长度
+		lenSuffix := longestCommonSuffix(pattern, pattern[1:i+1])
+		// 这种方式 "baba", "aababacaa" 的匹配错误
+		if pattern[i-lenSuffix] != pattern[last-lenSuffix] {
+
+			f.goodSuffixSkip[last-lenSuffix] = lenSuffix + last - i
+		}
+		// 略过 某个字符一直重复的  子串,还有前缀跟后缀相同时，略过
+		//fmt.Println(pattern[i-lenSuffix] != pattern[last-lenSuffix])
+		//if pattern[i-lenSuffix] != pattern[last-lenSuffix] {
+		//	// 这里的是从前往后数的，所以 这里的 lenSuffix是对齐 主串和pattern子串 尾部， last-i 是重复子串尾部到 pattern子串的尾部的距离
+		//	f.goodSuffixSkip[last-lenSuffix] = lenSuffix + last - i
+		//}
+	}
+	return f
 }
 
 // 创建 好字符 规则和 坏字符 规则,比较时是 从后向前 比较
@@ -47,11 +100,12 @@ func makeStringFinder(pattern string) *stringFinder {
 			lastPrefix = i + 1
 		}
 		// 好后缀时T的指针移动分两步，首先移动到与 pattern的末尾对齐，即 last - i
-		// lastPrefix 用来记录 pattern[i+1:]中所有后缀与同等长度的前缀相等时的最大索引
+		// lastPrefix 用来记录 pattern[i+1:]中所有后缀与同等长度的前缀相等时， 后缀的起点
 		// 然后移动 lastPrefix步
 		// 先对齐
 		tm := last - i
-		// 然后移动 lastPrefix次， 就将相同的字符对齐了。相同后缀的起点到子串的头部的距离 跟  相同前缀的终点到子串的尾部距离 是一样的
+		// 然后移动 上一次相同前后缀的 距离，这里是假设pattern内部没有了跟后缀相同的子串。
+		// 为了以防错过 除去前后缀，pattern内部分子串跟后缀相同，下面会计算
 		f.goodSuffixSkip[i] = lastPrefix + tm
 	}
 	// 第二阶段: 除去前缀，好后缀 在pattern前面还出现过, 如下计算相应的移动步数
@@ -59,7 +113,8 @@ func makeStringFinder(pattern string) *stringFinder {
 	for i := 0; i < last; i++ {
 		// 前缀已经算过了，这里计算抛去第一个字符，部分子串与后缀相同的长度
 		lenSuffix := longestCommonSuffix(pattern, pattern[1:i+1])
-		// 略过 某个字符一直重复的  子串,还有尾部跟头部相同时，略过
+		// 前缀跟后缀相同时，略过
+		fmt.Println(pattern[i-lenSuffix] != pattern[last-lenSuffix])
 		if pattern[i-lenSuffix] != pattern[last-lenSuffix] {
 			// 这里的是从前往后数的，所以 这里的 lenSuffix是对齐 主串和pattern子串 尾部， last-i 是重复子串尾部到 pattern子串的尾部的距离
 			f.goodSuffixSkip[last-lenSuffix] = lenSuffix + last - i

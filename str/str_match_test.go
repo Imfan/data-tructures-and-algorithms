@@ -27,6 +27,9 @@ func TestBF(t *testing.T) {
 		{"abc", "acca", -1},
 		{"aa", "aaa", 0},
 		{"aaaaaa", "aaaaaaaaaa", 0},
+		{"abcabc", "aaaabcabcaa", 3},
+		{"abab", "aaababcaa", 2},
+		{"baba", "aaababacaa", 3},
 		{"a", "aaaab", 0},
 		{"baa", "aaaaa", -1},
 		{"at that", "which finally halts.  at that point", 22},
@@ -39,7 +42,7 @@ func TestBF(t *testing.T) {
 	//		fmt.Println(v.text, s)
 	//	}
 	//})
-
+	//
 	//convey.Convey("测试KMP字符串匹配", t, func() {
 	//	for _, v := range testCases {
 	//		s := KMP(v.pat, v.text)
@@ -56,6 +59,15 @@ func TestBF(t *testing.T) {
 			fmt.Println(v.pat)
 		}
 	})
+
+	//convey.Convey("测试BM字符串匹配", t, func() {
+	//	for _, v := range testCases {
+	//		s := BM2(v.pat, v.text)
+	//		convey.So(s, convey.ShouldEqual, v.index)
+	//		//convey.So(e, convey.ShouldEqual, v.ret2)
+	//		fmt.Println(v.pat)
+	//	}
+	//})
 
 	//fmt.Println(StringFind("fdsa", "fff"))
 }
